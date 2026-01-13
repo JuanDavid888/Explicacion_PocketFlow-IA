@@ -1,21 +1,43 @@
 import {Node,Flow} from "pocketflow";
 
-/*
- * Nodo único:
- - 1. Leer shared.number.
- - 2. Calcular si es par/impar.
- - 3. Guardar shared.result.
-*/
 
-class EvenOddNode extends Node{
+class GraphNode extends Node{
     prep(shared){
-        return shared.number;
+        return shared.entrada;
     }
-    exec(number){
-        if(typeof number !== "number"){
-            throw new Error("number must be a number");
+    exec(entrada) {
+        if (typeof entrada !== "string") {
+            throw new Error("entrada must be a string");
         }
-        return number % 2 === 0 ? "even":"odd";
+
+        const pares = entrada.split(";");
+        let diccionario = {};
+
+        // 1. Inicializar todos los nodos en 0
+        for (let par of pares) {
+            const nodo = par.split(":")[0];
+            diccionario[nodo] = 0;
+        }
+
+        // 2. Contar conexiones
+        for (let par of pares) {
+            const [izquierda, derecha] = par.split(":");
+
+            // conexiones salientes
+            diccionario[izquierda] += derecha.length;
+
+            // conexiones entrantes
+            for (let letra of derecha) {
+                if (diccionario.hasOwnProperty(letra)) {
+                    diccionario[letra] += 1;
+                }
+            }
+        }
+
+        // 3. Formatear salida
+        const clavesOrdenadas = Object.keys(diccionario).sort();
+        const linea = clavesOrdenadas.map(clave => `${clave}: ${diccionario[clave]}`);
+        return linea.join(" ");
     }
 
     post(shared, prepRes, execRes){
@@ -24,15 +46,6 @@ class EvenOddNode extends Node{
     }
 }
 
-export function buildEvenOddFlow(){
-    return new Flow(new EvenOddNode());
+export function buildGraphFlow(){
+    return new Flow(new GraphNode());
 }
-
-/*
- ### RESUMEN ###
- 1. "shared" es una "mochila" de datos que viaja por el flujo
- 2. "prep" tomará la entrada.
- 3. "exec" resolverá el algoritmo.
- 4. "post" guardará el resultado.
- 5. "return null" significará que "no hay siguiente paso".
-*/
