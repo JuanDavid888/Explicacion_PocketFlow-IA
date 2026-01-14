@@ -50,6 +50,19 @@ describe("GraphNode (PocketFlow)", () => {
         );
     });
 
+    test("Error si los casos no son strings", async () => {
+        const flow = buildGraphFlow();
+
+        const shared = {
+            casos: 1,
+            entradas: [1]
+        };
+
+        await expect(flow.run(shared)).rejects.toThrow(
+            "Cada entrada debe ser un string"
+        );
+    });
+
     test("Ignora entradas adicionales si casos es menor", async () => {
         const flow = buildGraphFlow();
 

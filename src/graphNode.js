@@ -7,6 +7,12 @@ class GraphNode extends Node {
             throw new Error("shared debe tener 'casos' como number y 'entradas' como string");
         }
 
+        for (const entrada of shared.entradas) {
+            if (typeof entrada !== "string") {
+                throw new Error("Cada entrada debe ser un string");
+            }
+        }
+
         return {
             casos: shared.casos,
             entradas: shared.entradas
